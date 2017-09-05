@@ -43,7 +43,8 @@ function show_form(){
   echo '<div id="data-form" class="form-contentner">
     <div class="form-group">
       <label for="product_name">สินค้า</label>
-      <input type="text" name="product_name" id="product_name">
+      <select class="input-text" name="product_name" id="product_name">
+      </select>
     </div>
     <div class="form-group">
       <label for="size">ขนาดกระดาษ</label>
@@ -101,9 +102,6 @@ function dzx_query(){
   $price = $_POST['price'];
   $duration = $_POST['duration'];
 
-
-
-
 	global $wpdb;
 
   $cquery = 'SELECT * FROM pim123_product WHERE 1 ';
@@ -140,5 +138,23 @@ function sql_candinate($cand ,$val){
   }
   return $d ;
 }
+
+
+function getlist() {
+
+  global $wpdb;
+  $cquery = 'SELECT * FROM pim123_product GROUP BY name ORDER BY name ASC';
+  $get_data = $wpdb->get_results($cquery);
+
+  //echo $get_data;
+	$data = json_encode($get_data);
+  echo $data;
+  	die();
+
+}
+//use for loin user
+add_action('wp_ajax_getlist', 'getlist');
+//use for none login
+add_action('wp_ajax_nopriv_getlist', 'getlist');
 
 ?>
