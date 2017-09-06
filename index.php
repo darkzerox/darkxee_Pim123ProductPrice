@@ -41,48 +41,15 @@ function get_console( $data ) {
 //start html skeleton
 function show_form(){
   echo '<div id="data-form" class="form-contentner">
-    <div class="form-group">
-      <label for="product_name">สินค้า</label>
-      <select class="input-text" name="product_name" id="product_name">
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="size">ขนาดกระดาษ</label>
-      <input type="text" name="size" id="size">
-    </div>
-    <div class="form-group">
-      <label for="color">เทคนิคการพิมพ์</label>
-      <input type="text" name="color" id="color">
-    </div>
-    <div class="form-group">
-      <label for="page">จำนวนหน้า</label>
-      <input type="text" name="page" id="page">
-    </div>
-    <div class="form-group">
-      <label for="type">ชนิดการะดาษ</label>
-      <input type="text" name="type" id="type">
-    </div>
-    <div class="form-group">
-      <label for="quantity">จำนวน</label>
-      <input type="text" name="quantity" id="quantity">
-    </div>
-    <div class="form-group">
-      <label for="price_u">ราคา/หน่วย</label>
-      <input type="text" name="price_u" id="price_pu">
-    </div>
-    <div class="form-group">
-      <label for="price">ราคาทั้งหมด</label>
-      <input type="text" name="price" id="price">
-    </div>
-    <div class="form-group">
-      <label for="duration">ระยะเวลา</label>
-      <input type="text" name="duration" id="duration">
-    </div>
-    <div class="form-group full">
-      <input type="submit" name="Submit" id="data_submit">
-    </div>
+          <div class="form-group search_product">
+            <label for="product_name">สินค้า</label>
+            <select class="input-text" name="product_name" id="product_name">
+            </select>
+          </div>
+          <div id="table-field">
+          </div>
 
-  </div>';
+        </div>';
   //table skeleton
   echo '<div id ="pim-data"></div>';
 }
@@ -102,10 +69,7 @@ function dzx_query(){
   $price = $_POST['price'];
   $duration = $_POST['duration'];
 
-	global $wpdb;
-
-  $cquery = 'SELECT * FROM pim123_product WHERE 1 ';
-  $cquery.= sql_candinate("name",$name);
+  $cquery = 'SELECT * FROM pim123_'.$name.' WHERE 1 ';
   $cquery.= sql_candinate("size",$size);
   $cquery.= sql_candinate("color",$color);
   $cquery.= sql_candinate("page",$page);
@@ -114,16 +78,7 @@ function dzx_query(){
   $cquery.= sql_candinate("price_pu",$price_pu);
   $cquery.= sql_candinate("price",$price);
   $cquery.= sql_candinate("size",$duration);
-
-
-
-  $get_data = $wpdb->get_results($cquery);
-
-	//echo $get_data;
-	$data = json_encode($get_data);
-  echo $data;
-  	die();
-
+  getQuery($cquery);
 }
 //use for loin user
 add_action('wp_ajax_dzx_query', 'dzx_query');
@@ -131,6 +86,33 @@ add_action('wp_ajax_dzx_query', 'dzx_query');
 add_action('wp_ajax_nopriv_dzx_query', 'dzx_query');
 
 
+
+function getlist() {
+  getQuery('SELECT * FROM pim123_products GROUP BY name ORDER BY name ASC');
+}
+add_action('wp_ajax_getlist', 'getlist');
+add_action('wp_ajax_nopriv_getlist', 'getlist');
+
+
+function getTable(){
+  $tablename = $_POST['tablename'];
+  getQuery('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME="pim123_'.$tablename.'"');
+}
+add_action('wp_ajax_getTable', 'getTable');
+add_action('wp_ajax_nopriv_getTable', 'getTable');
+
+
+
+
+
+//get data query
+function getQuery($query){
+    global $wpdb;
+    $get_data = $wpdb->get_results($query);
+    //echo $get_data;
+  	echo json_encode($get_data);
+    die();
+}
 //return sql candinate
 function sql_candinate($cand ,$val){
   if(!empty($val)){
@@ -140,21 +122,5 @@ function sql_candinate($cand ,$val){
 }
 
 
-function getlist() {
-
-  global $wpdb;
-  $cquery = 'SELECT * FROM pim123_product GROUP BY name ORDER BY name ASC';
-  $get_data = $wpdb->get_results($cquery);
-
-  //echo $get_data;
-	$data = json_encode($get_data);
-  echo $data;
-  	die();
-
-}
-//use for loin user
-add_action('wp_ajax_getlist', 'getlist');
-//use for none login
-add_action('wp_ajax_nopriv_getlist', 'getlist');
 
 ?>

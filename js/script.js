@@ -2,22 +2,60 @@ $ = jQuery;
 $(document).ready(function() {
 
   getProductList();
+  // getTable();
 
   $('#data_submit').on('click', function() {
+    getProductList();
     update_table();
+    getTable();
+
   });
   $('#data-form .form-group').on('keyup change', function() {
+    getProductList();
+    getTable();
     update_table();
   });
-  //console.log('click');
 
-  //console.log($('#data-form #product_name').val());
-
-  /**
-   * [type ajax return sql data]
-   * @type {String}
-   */
 });
+
+
+function getTable() {
+  $.ajax({
+    type: 'POST',
+    url: darkxee.callurl,
+    data: {
+      'action': 'getTable',
+      'tablename': $('#product_name').val()
+
+    },
+    success: function(data) {
+      console.log(data);
+      data = JSON.parse(data);
+      var formfield = "";
+      $.each(data, function(i, item) {
+
+        if (item.COLUMN_NAME !== 'id' && item.COLUMN_NAME !== 'note' && item.COLUMN_NAME !== 'name') {
+          formfield += `<div class="form-group">
+                          <label for="${item.COLUMN_NAME}">${item.COLUMN_NAME}</label>
+                          <select class="input-text" type="text" name="${item.COLUMN_NAME}" id="${item.COLUMN_NAME}"></select>
+                        </div>`
+
+        }
+
+
+      })
+      formfield += `<div class="form-group full">
+        <input type="submit" name="Submit" id="data_submit">
+      </div>`;
+      $('#table-field').html('');
+      $('#table-field').append(formfield);
+
+
+
+    }
+  });
+}
+
 
 function update_table() {
   $.ajax({
@@ -44,19 +82,6 @@ function update_table() {
      * @param  {[json]} data [sql data]
      */
     success: function(data) {
-
-      // console.log(  `
-      //   "name": ${$('#data-form #product_name').val()},
-      //   "size": ${$('#data-form #size').val()},
-      //   "color": ${$('#data-form #color').val()},
-      //   "page": ${$('#data-form #page').val()},
-      //   "type": ${$('#data-form #type').val()},
-      //   "quantity": ${$('#data-form #quantity').val()},
-      //   "price_pu": ${$('#data-form #price_pu').val()},
-      //   "price": ${$('#data-form #price').val()},
-      //   "duration": ${$('#data-form #duration').val()}
-      //   `);
-
 
 
       $('#pim-data').html('').append(`
@@ -132,7 +157,6 @@ function update_table() {
       ];
 
       data = JSON.parse(data);
-      //console.log(data);
 
       $('#tabledata').DataTable({
         responsive: true,
@@ -154,57 +178,23 @@ function getProductList() {
     type: 'POST',
     url: darkxee.callurl,
     data: {
-      //call php function
       "action": "getlist",
     },
-    /**
-     * [return data from php function]
-     * @param  {[json]} data [sql data]
-     */
     success: function(data) {
       data = JSON.parse(data);
-
-      //  console.log(data);
-
       var listOption = "";
-      var pName = [];
-      var pSize = [];
-      var pColor = [];
-      var pPage = [];
-      var pType = [];
-
-
 
       $.each(data, function(i, item) {
-
-        pName[i] = data[i].name;
-        pSize[i] = data[i].size;
-        pColor[i] = data[i].color;
-        pPage[i] = data[i].page;
-        pType[i] = data[i].type;
-
-        // console.log( data[i].name );
-        listOption += `<option value="${data[i].name}">${data[i].name}</option>`;
+        listOption += `<option value="${item.db_name}">${item.name}</option>`;
       })
-
-
       $('#product_name').append(listOption);
-
-
-
-
-      console.log(arrayRemoveDup(pName));
-      console.log(arrayRemoveDup(pSize));
-      console.log(arrayRemoveDup(pColor));
-      console.log(arrayRemoveDup(pPage));
-      console.log(arrayRemoveDup(pType));
-
+      getTable();
     }
   });
 }
 
 
 function arrayRemoveDup(data) {
-  return  data.filter( (el, i, arr) => arr.indexOf(el) === i).sort();
+  return data.filter((el, i, arr) => arr.indexOf(el) === i).sort();
 
 }
