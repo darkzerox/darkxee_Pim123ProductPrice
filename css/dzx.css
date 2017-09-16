@@ -1,40 +1,93 @@
 .form-group {
-    width: 50%;
-    float: left;
-    box-sizing: border-box;
-    padding: 10px ;
+  width: 50%;
+  float: left;
+  box-sizing: border-box;
+  padding: 10px;
 }
 
 .form-group label {
-    display: block;
-    width: 100%;
-}
-.form-group input,
-.form-group select{
-    width:100%
+  display: block;
+  width: 100%;
+  font-size: 18px;
 }
 
-.form-contentner ,
-#pim-data{
-    width: 100%;
-    clear: both;
-    display: table;
-    position: relative;
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-contentner, #pim-data {
+  width: 100%;
+  clear: both;
+  display: table;
+  position: relative;
+  margin-top: 30px;
 }
 
 .form-group.full {
-    width: 100%;
+  width: 100%;
 }
 
 #data_submit {
-    max-width: 250px;
-    display: block;
-    margin: auto;
+  max-width: 250px;
+  display: block;
+  margin: auto;
 }
+
 .form-load {
-    background: rgba(0, 0, 0, 0.45);
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
+  background: rgba(255, 255, 255, 0.69);
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.form-load>div {
+  display: flex;
+  justify-content: center;
+  height: 320px;
+}
+
+#pim-data th, #pim-data td {
+  text-align: center;
+  vertical-align: middle;
+  transition: background-color .1s;
+}
+
+#pim-data table, #data-form {
+  border: dashed 2px #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#pim-data tr:hover td {
+  background: #959595;
+  color: #fff;
+  cursor: pointer;
+}
+
+#data-form {
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+#pim-data thead {
+  background: whitesmoke;
+}
+
+#pim-data th {
+  padding: 20px 0;
+}
+
+button {
+    background: rgb(192, 226, 239);
+    font-size: 16px;
+    border: 0;
+    border-radius:5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+button:hover{
+    background: rgb(154, 205, 224);
 }

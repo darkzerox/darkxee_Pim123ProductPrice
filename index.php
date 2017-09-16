@@ -43,7 +43,7 @@ function show_form(){
   echo '<div id="data-form" class="form-contentner">
   <div class="form-load">
     <div>
-    <img src= "'.plugins_url('/images/load.gif', __FILE__).'"/>
+    <img src= "'.plugins_url('/images/Ripple.svg', __FILE__).'"/>
     </div>
   </div>
           <div class="form-group search_product">
@@ -54,7 +54,9 @@ function show_form(){
           <div id="table-field">
           </div>
           <div class="form-group full">
-            <input type="submit" name="Submit" id="data_submit">
+
+            <button id ="data_submit">ค้นหาสินค้า</button>
+
           </div>
         </div>';
   //table skeleton
@@ -124,6 +126,19 @@ function getTable(){
 }
 add_action('wp_ajax_getTable', 'getTable');
 add_action('wp_ajax_nopriv_getTable', 'getTable');
+
+
+function getTableOption(){
+  $table = $_POST['table'];
+  $field = $_POST['field'];
+ $Tquery = 'SELECT DISTINCT '.$field.' FROM pim123_'.$table.' ORDER BY '.$field;
+  getQuery($Tquery);
+
+
+}
+add_action('wp_ajax_getTableOption', 'getTableOption');
+add_action('wp_ajax_nopriv_getTableOption', 'getTableOption');
+
 
 
 //get data query
