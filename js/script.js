@@ -1,5 +1,4 @@
 $ = jQuery;
-
 //var includeTable = [];
 var excludeField = ['id', 'name', 'note', 'price_unit', 'duration', 'quantity', 'price'];
 
@@ -7,7 +6,7 @@ var excludeField = ['id', 'name', 'note', 'price_unit', 'duration', 'quantity', 
 var txtlist = {
   'color': 'สี',
   'size': 'จำนวน',
-  'page_type': 'จำนวนหน้าพิมพ์',
+  'page_type': 'จำนวนหน้าพิมพ์ (ด้าน)',
   'paper_type': 'ประเภทกระดาษ',
   'quantity': 'จำนวน',
   'size': 'ขนาด',
@@ -23,6 +22,17 @@ var txtlist = {
   'shape': 'รูปทรงสติ๊กเกอร์',
   'sticker_delivery': 'sticker_delivery',
   'decorate': 'การตกแต่ง',
+  'paper_type_cover': 'ประเภทกระดาษ (ปก)',
+  'color_cover': 'สี  (ปก)',
+  'quantity_cover': 'จำนวนหน้าพิมพ์  (ปก)',
+  'coating_cover': 'การเคลือบ  (ปก)',
+  'paper_type_inner': 'ประเภทกระดาษ (ด้านใน)',
+  'color_inner': 'สี (ด้านใน)',
+  'quantity_inner': 'จำนวนหน้าพิมพ์ (ด้านใน)',
+  'coating_inner': 'การเคลือบ (ด้านใน)',
+  'pooh': 'ภู่',
+
+
 };
 
 //number format
@@ -34,14 +44,18 @@ var formatter = new Intl.NumberFormat('th-TH', {
 $(document).ready(function() {
   getProductList();
 
-  $('#data_submit').on('click', function() {
+  $('#data_submit').on('click', function(e) {
+    e.preventDefault();
     $('.form-load').fadeIn();
     update_table();
+    $('#pim-data').fadeIn();
   });
 
   $('#data-form #name').change(function() {
     $('.form-load').fadeIn();
+    $('#pim-data').fadeOut('slow');
     getTable();
+
   });
 
 
@@ -55,8 +69,9 @@ function getProductList() {
     type: 'POST',
     url: darkxee.callurl,
     data: {
-      "action": "getlist",
-      "tabledata": "products",
+      'action': 'getlist',
+      'tabledata': 'products',
+      'pd': getUrlParameter('pd'),
     },
     success: function(data) {
       data = JSON.parse(data).sort(name);
@@ -64,7 +79,7 @@ function getProductList() {
       $.each(data, function(i, item) {
         listOption += `<option value="${item.db_name}">${item.name}</option>`;
       })
-      $('#name').append(listOption);
+      $('#data-form #name').append(listOption);
 
       getTable();
 
@@ -80,7 +95,8 @@ function getTable() {
     url: darkxee.callurl,
     data: {
       'action': 'getTable',
-      'tablename': $('#name').val()
+      'tablename': $('#name').val(),
+      'pd': getUrlParameter('pd'),
 
     },
     success: function(data) {
@@ -115,6 +131,7 @@ function getTableOption(field) {
       'action': 'getTableOption',
       'field': field,
       'table': $('#name').val(),
+      'pd': getUrlParameter('pd'),
     },
     success: function(data) {
       data = JSON.parse(data);
@@ -130,39 +147,21 @@ function getTableOption(field) {
 }
 
 function update_table() {
+  var formdata = $('#data-form').serialize();
   $.ajax({
     type: 'POST',
     url: darkxee.callurl,
-    data: {
-      //call php function
-      "action": "dzx_query",
-      //sent var data
-      "name": $('#data-form #name').val(),
-      "size": $('#data-form #size').val(),
-      "color": $('#data-form #color').val(),
-      "page_type": $('#data-form #page_type').val(),
-      "paper_type": $('#data-form #paper_type').val(),
-      "quantity": $('#data-form #quantity').val(),
-      "price_unit": $('#data-form #price_unit').val(),
-      "price": $('#data-form #price').val(),
-      "duration": $('#data-form #duration').val(),
-      "coating": $('#data-form #coating').val(),
-      "punch": $('#data-form #punch').val(),
-      "fold": $('#data-form #fold').val(),
-      "make_book": $('#data-form #make_book').val(),
-      "book_page": $('#data-form #book_page').val(),
-      "string": $('#data-form #string').val(),
-      "shape": $('#data-form #shape').val(),
-      "sticker_delivery": $('#data-form #sticker_delivery').val(),
-      "decorate": $('#data-form #decorate').val(),
+    data: formdata + '&action=dzx_query',
 
-    },
+
     /**
      * [return data from php function]
      * @param  {[json]} data [sql data]
      */
     success: function(data) {
       data = JSON.parse(data);
+      console.log(data);
+
       if (data.length > 0) {
         var resault = `
         <table>
@@ -228,3 +227,20 @@ $(document).ajaxComplete(function() {
     console.log($text);
   });
 });
+
+
+
+function getUrlParameter(sParam) {
+  var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+    sURLVariables = sPageURL.split('&'),
+    sParameterName,
+    i;
+
+  for (i = 0; i < sURLVariables.length; i++) {
+    sParameterName = sURLVariables[i].split('=');
+
+    if (sParameterName[0] === sParam) {
+      return sParameterName[1] === undefined ? true : sParameterName[1];
+    }
+  }
+};

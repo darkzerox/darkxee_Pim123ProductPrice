@@ -40,12 +40,12 @@ function get_console( $data ) {
 
 //start html skeleton
 function show_form(){
-  echo '<div id="data-form" class="form-contentner">
-  <div class="form-load">
-    <div>
-    <img src= "'.plugins_url('/images/Ripple.svg', __FILE__).'"/>
-    </div>
-  </div>
+  echo '<form id="data-form" class="form-contentner">
+          <div class="form-load">
+            <div>
+            <img src= "'.plugins_url('/images/Ripple.svg', __FILE__).'"/>
+            </div>
+          </div>
           <div class="form-group search_product">
             <label for="name">สินค้า</label>
             <select class="input-text" name="name" id="name">
@@ -58,59 +58,51 @@ function show_form(){
             <button id ="data_submit">ค้นหาสินค้า</button>
 
           </div>
-        </div>';
+        </form>';
   //table skeleton
   echo '<div id ="pim-data"></div>';
 }
 add_shortcode('dzx_data', 'show_form');
 
 function getlist() {
-  $tabledata = $_POST['tabledata'];
-  getQuery('SELECT * FROM pim123_'.$tabledata.'');
+
+  if ($_POST['pd'] !=""){
+    $wheresql = ' WHERE db_name LIKE "'.$_POST['pd'].'"';
+  }
+
+  getQuery('SELECT * FROM pim123_'.$_POST['tabledata']. $wheresql . ' ORDER BY name' );
 }
 add_action('wp_ajax_getlist', 'getlist');
 add_action('wp_ajax_nopriv_getlist', 'getlist');
 
 function dzx_query(){
+  $cquery = 'SELECT * FROM pim123_'.$_POST['name'].' WHERE 1 ';
+  $cquery .= sql_candinate("size",$_POST['size']);
+  $cquery .= sql_candinate("color",$_POST['color']);
+  $cquery .= sql_candinate("page_type",$_POST['page_type']);
+  $cquery .= sql_candinate("paper_type",$_POST['paper_type']);
+  $cquery .= sql_candinate("quantity",$_POST['quantity']);
+  $cquery .= sql_candinate("price_unit",$_POST['price_unit']);
+  $cquery .= sql_candinate("price",$_POST['price']);
+  $cquery .= sql_candinate("duration",$_POST['duration']);
+  $cquery .= sql_candinate("coating",$_POST['coating']);
+  $cquery .= sql_candinate("punch",$_POST['punch']);
+  $cquery .= sql_candinate("fold",$_POST['fold']);
+  $cquery .= sql_candinate("make_book",$_POST['make_book']);
+  $cquery .= sql_candinate("book_page",$_POST['book_page']);
+  $cquery .= sql_candinate("string",$_POST['string']);
+  $cquery .= sql_candinate("shape",$_POST['shape']);
+  $cquery .= sql_candinate("sticker_delivery",$_POST['sticker_delivery']);
 
-  $name = $_POST['name'];
-  $size = $_POST['size'];
-  $color =$_POST['color'];
-  $page_type = $_POST['page_type'];
-  $paper_type = $_POST['paper_type'];
-  $quantity = $_POST['quantity'];
-  $price_unit = $_POST['price_unit'];
-  $price = $_POST['price'];
-  $duration = $_POST['duration'];
-  $coating = $_POST['coating'];
-  $punch = $_POST['punch'];
-  $fold = $_POST['fold'];
-  $make_book = $_POST['make_book'];
-  $book_page = $_POST['book_page'];
-  $string = $_POST['string'];
-  $shape = $_POST['shape'];
-  $sticker_delivery = $_POST['sticker_delivery'];
-
-
-  $cquery = 'SELECT * FROM pim123_'.$name.' WHERE 1 ';
-  $cquery .= sql_candinate("size",$size);
-  $cquery .= sql_candinate("color",$color);
-  $cquery .= sql_candinate("page_type",$page_type);
-  $cquery .= sql_candinate("paper_type",$paper_type);
-  $cquery .= sql_candinate("quantity",$quantity);
-  $cquery .= sql_candinate("price_unit",$price_unit);
-  $cquery .= sql_candinate("price",$price);
-  $cquery .= sql_candinate("duration",$duration);
-  $cquery .= sql_candinate("coating",$coating);
-  $cquery .= sql_candinate("punch",$punch);
-  $cquery .= sql_candinate("fold",$fold);
-  $cquery .= sql_candinate("make_book",$make_book);
-  $cquery .= sql_candinate("book_page",$book_page);
-  $cquery .= sql_candinate("string",$string);
-  $cquery .= sql_candinate("shape",$shape);
-  $cquery .= sql_candinate("sticker_delivery",$sticker_delivery);
-
-
+  $cquery .= sql_candinate("paper_type_cover",$_POST['paper_type_cover']);
+  $cquery .= sql_candinate("color_cover",$_POST['color_cover']);
+  $cquery .= sql_candinate("quantity_cover",$_POST['quantity_cover']);
+  $cquery .= sql_candinate("coating_cover",$_POST['coating_cover']);
+  $cquery .= sql_candinate("paper_type_inner",$_POST['paper_type_inner']);
+  $cquery .= sql_candinate("color_inner",$_POST['color_inner']);
+  $cquery .= sql_candinate("quantity_inner",$_POST['quantity_inner']);
+  $cquery .= sql_candinate("coating_inner",$_POST['coating_inner']);
+  $cquery .= sql_candinate("pooh",$_POST['pooh']); 
 
   getQuery($cquery);
 
@@ -121,7 +113,12 @@ add_action('wp_ajax_dzx_query', 'dzx_query');
 add_action('wp_ajax_nopriv_dzx_query', 'dzx_query');
 
 function getTable(){
-  $tablename = $_POST['tablename'];
+
+  if ($_POST['pd'] !=""){
+    $tablename = $_POST['pd'];
+  }else{
+    $tablename = $_POST['tablename'];
+  }
   getQuery('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME="pim123_'.$tablename.'"');
 }
 add_action('wp_ajax_getTable', 'getTable');
@@ -129,7 +126,12 @@ add_action('wp_ajax_nopriv_getTable', 'getTable');
 
 
 function getTableOption(){
-  $table = $_POST['table'];
+
+  if ($_POST['pd'] !=""){
+    $table = $_POST['pd'];
+  }else{
+    $table = $_POST['table'];
+  }
   $field = $_POST['field'];
  $Tquery = 'SELECT DISTINCT '.$field.' FROM pim123_'.$table.' ORDER BY '.$field;
   getQuery($Tquery);
