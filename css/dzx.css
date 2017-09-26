@@ -91,3 +91,27 @@ button {
 button:hover{
     background: rgb(154, 205, 224);
 }
+
+.pop-body {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: white;
+    border: dashed 1px #848484;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+}
+
+
+.pop-shadow {
+    background: rgba(0, 0, 0, 0.78);
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+}

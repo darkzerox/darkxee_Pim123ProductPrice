@@ -32,7 +32,6 @@ var txtlist = {
   'coating_inner': 'การเคลือบ (ด้านใน)',
   'pooh': 'ภู่',
 
-
 };
 
 //number format
@@ -41,7 +40,9 @@ var formatter = new Intl.NumberFormat('th-TH', {
 });
 
 
+
 $(document).ready(function() {
+
   getProductList();
 
   $('#data_submit').on('click', function(e) {
@@ -57,9 +58,12 @@ $(document).ready(function() {
     getTable();
 
   });
-
-
 });
+
+$(window).load(function(){
+
+
+})
 
 
 
@@ -80,11 +84,7 @@ function getProductList() {
         listOption += `<option value="${item.db_name}">${item.name}</option>`;
       })
       $('#data-form #name').append(listOption);
-
       getTable();
-
-
-
     }
   });
 }
@@ -113,7 +113,6 @@ function getTable() {
                         </div>`;
           getTableOption(item.COLUMN_NAME);
         }
-
       })
 
       $('#table-field').html('');
@@ -160,7 +159,6 @@ function update_table() {
      */
     success: function(data) {
       data = JSON.parse(data);
-      console.log(data);
 
       if (data.length > 0) {
         var resault = `
@@ -189,7 +187,6 @@ function update_table() {
             <td>${v.duration} วัน</td>
             <td><button class="btn-call-order">Click</button></td>
             </tr>`;
-
         });
         resault += `</tbody></table>`;
 
@@ -219,16 +216,28 @@ function __t(txt) {
 
 }
 
-
 $(document).ajaxComplete(function() {
   $(".btn-call-order").click(function() {
-    var $row = $(this).closest("tr"); // Find the row
-    var $text = $row.find('td').text(); // Find the text
-    console.log($text);
+    var tds = $(this).closest('tr').children('td');
+    //console.log(tds);
+    var dataArray = [];
+    for (i = 0; i < tds.length; i++) dataArray.push($(tds[i]).html());
+    //Use dataArray here
+    console.log(dataArray);
+    var order_data = "";
+    $('#data-form').each(function(){
+      var label = $(this).find('label').text();
+      console.log(label);
+      var fdata = $(this).find('.input-text').val();
+      console.log(fdata);
+      order_data += "\n"+ label +" : "+ fdata;
+    });
+    // console.log(order_data);
+
+    $('#product-order').val(order_data);
+
   });
 });
-
-
 
 function getUrlParameter(sParam) {
   var sPageURL = decodeURIComponent(window.location.search.substring(1)),
