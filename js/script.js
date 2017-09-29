@@ -1,6 +1,6 @@
 $ = jQuery;
 //var includeTable = [];
-var excludeField = ['id', 'name', 'note', 'price_unit', 'duration', 'quantity', 'price'];
+var excludeField = ['id', 'name', 'note', 'price_unit',  'quantity', 'price'];
 
 //translaate
 var txtlist = {
@@ -43,10 +43,13 @@ var formatter = new Intl.NumberFormat('th-TH', {
 
 $(document).ready(function() {
 
+  $('.se-pre-con').remove();
+
   getProductList();
 
   $('#data_submit').on('click', function(e) {
     e.preventDefault();
+    $('.contact-order').fadeOut('slow');
     $('.form-load').fadeIn();
     update_table();
     $('#pim-data').fadeIn();
@@ -55,12 +58,13 @@ $(document).ready(function() {
   $('#data-form #name').change(function() {
     $('.form-load').fadeIn();
     $('#pim-data').fadeOut('slow');
+    $('.contact-order').fadeOut('slow');
     getTable();
 
   });
 });
 
-$(window).load(function(){
+$(window).load(function() {
 
 
 })
@@ -78,7 +82,8 @@ function getProductList() {
       'pd': getUrlParameter('pd'),
     },
     success: function(data) {
-      data = JSON.parse(data).sort(name);
+      data = JSON.parse(data);
+      console.log(data);
       var listOption = "";
       $.each(data, function(i, item) {
         listOption += `<option value="${item.db_name}">${item.name}</option>`;
@@ -101,7 +106,7 @@ function getTable() {
     },
     success: function(data) {
 
-      data = JSON.parse(data);
+      data = JSON.parse(data).sort();
 
       var formfield = "";
       $.each(data, function(i, item) {
@@ -181,11 +186,11 @@ function update_table() {
           //date = date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear();
 
           resault += `<tr>
-            <td>${formatter.format(v.quantity)}</td>
+            <td>${v.quantity}</td>
             <td>${formatter.format(v.price_unit)}</td>
             <td>${formatter.format(v.price)}</li>
             <td>${v.duration} วัน</td>
-            <td><button class="btn-call-order">Click</button></td>
+            <td><button class="btn-call-order">เลือก</button></td>
             </tr>`;
         });
         resault += `</tbody></table>`;
@@ -199,7 +204,7 @@ function update_table() {
       $('.form-load').fadeOut();
 
       $('html, body').animate({
-        scrollTop: $('#pim-data').offset().top - 50
+        scrollTop: $('#pim-data').offset().top - 200
       }, 1000);
 
     }
@@ -217,24 +222,39 @@ function __t(txt) {
 }
 
 $(document).ajaxComplete(function() {
-  $(".btn-call-order").click(function() {
+  $(".btn-call-order ,#pim-data td").click(function() {
     var tds = $(this).closest('tr').children('td');
     //console.log(tds);
     var dataArray = [];
-    for (i = 0; i < tds.length; i++) dataArray.push($(tds[i]).html());
+    for (i = 0; i < tds.length; i++) dataArray.push($(tds[i]).text().trim());
     //Use dataArray here
-    console.log(dataArray);
+    // console.log(dataArray);
     var order_data = "";
-    $('#data-form').each(function(){
+    $('#data-form .form-group').each(function() {
       var label = $(this).find('label').text();
-      console.log(label);
-      var fdata = $(this).find('.input-text').val();
-      console.log(fdata);
-      order_data += "\n"+ label +" : "+ fdata;
+
+      var fdata = $(this).find('.input-text option:selected').text();
+
+      if (label != "" && fdata != "") {
+        order_data += label + " : " + fdata + "\n";
+      }
+
     });
+
+    order_data += '\nจำนวน : ' + dataArray[0];
+    order_data += '\nราคา/ชิ้น : ' + dataArray[1];
+    order_data += '\nราคารวม : ' + dataArray[2];
+    order_data += '\nเวลาผลิต : ' + dataArray[3];
+
     // console.log(order_data);
 
-    $('#product-order').val(order_data);
+    $('.product-order').val(order_data);
+    $('.product-order.fdisable').prop('readonly', true);
+    $('.contact-order').fadeIn('slow');
+    $('html, body').animate({
+      scrollTop: $('.contact-order').offset().top - 200
+    }, 1000);
+
 
   });
 });

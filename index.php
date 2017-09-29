@@ -9,9 +9,6 @@ Author URI:https://www.darkxee.com
 License: Plugin comes under GPL Licence.
 */
 
-
-wp_enqueue_script('datatable', plugins_url( '/js/jquery.dataTables.min.js' , __FILE__ ) , array( 'jquery' ));
-wp_enqueue_script('datatable-respon', plugins_url( '/js/dataTables.responsive.min.js' , __FILE__ ) , array( 'jquery' ));
 wp_enqueue_script('custom-js', plugins_url( '/js/script.js' , __FILE__ ) , array( 'jquery' ));
 wp_localize_script( 'custom-js', 'darkxee', array( 'callurl' => admin_url( 'admin-ajax.php')));
 
@@ -102,7 +99,7 @@ function dzx_query(){
   $cquery .= sql_candinate("color_inner",$_POST['color_inner']);
   $cquery .= sql_candinate("quantity_inner",$_POST['quantity_inner']);
   $cquery .= sql_candinate("coating_inner",$_POST['coating_inner']);
-  $cquery .= sql_candinate("pooh",$_POST['pooh']); 
+  $cquery .= sql_candinate("pooh",$_POST['pooh']);
 
   getQuery($cquery);
 
